@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">RealSimulator</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="location_mode">获取位置信息的方式</string>
+    <string name="modeGPS">GPS模式</string>
+    <string name="modeConfig">配置模式</string>
+
+</resources>
