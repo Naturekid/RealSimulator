@@ -5,7 +5,6 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
-import android.util.Log;
 
 /**
  * 
@@ -18,16 +17,18 @@ public class NodeInfo {
 	
 	public
 		static final int GPS_Mode = 1000;
-		static final int Config_Mode = 10001;
+		static final int Config_Mode = 1001;
 		
 		//节点属性
-	public int Mode = GPS_Mode ;//UI设置
+	public int Mode;
 	public int nodeNo;//节点编号
+	public double defualtLatitude;//默认纬度
+	public double defualtLongitude;//默认纬度
 	public long startTime;//以msec为单位。system.currentTimeMillis
 	public long endTime;//结束时间
 	public double com_Dis;//单位m
 	//节点属性文件
-	private String nodeInfoPath = new String("/sdcard/RealSimulation/nodeInfo.txt");
+	private String nodeInfoPath = new String("/sdcard/RealSimulator/nodeInfo.txt");
 		
 		//单例模式
 		private static NodeInfo instance=null;
@@ -76,6 +77,23 @@ public class NodeInfo {
 					else if(attrArray[0].equals("com_Dis"))
 					{
 						this.com_Dis = Double.parseDouble(attrArray[1]);
+					}
+					else if(attrArray[0].equals("Mode"))
+					{
+						if(attrArray[1].equals("Config_Mode"))
+							this.Mode = NodeInfo.Config_Mode;
+						else if(attrArray[1].equals("GPS_Mode"))
+							this.Mode = NodeInfo.GPS_Mode;
+						else
+							this.Mode = 0;
+					}
+					else if(attrArray[0].equals("defualtLatitude"))
+					{
+						this.defualtLatitude = Double.parseDouble(attrArray[1]);
+					}
+					else if(attrArray[0].equals("defualtLongitude"))
+					{
+						this.defualtLongitude = Double.parseDouble(attrArray[1]);
 					}
 					else if(attrArray[0].equals("startTime"))
 					{

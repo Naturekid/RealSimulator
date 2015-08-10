@@ -56,7 +56,9 @@ public class InteractorThread implements Runnable {
 			
 		} catch (SocketException e) {
 			e.printStackTrace();
-		}
+			//android.os.Process.killProcess(android.os.Process.myPid());   //获取PID 
+			//System.exit(0);   //常规java、c#的标准退出法，返回值为0代表正常退出
+		} 
 	};
 	
 
@@ -90,19 +92,25 @@ public class InteractorThread implements Runnable {
 	
 	@Override
 	public void run() {
-		byte[] recvBuf = new byte[16];
+		byte[] recvBuf = new byte[256];
 		//byte[] sendBuf = new byte[20];//纬度：经度：
-		byte[] buf =new byte[8];//
+		byte[] buf =new byte[256];//
 		
-		DatagramPacket recvPacket = new DatagramPacket(recvBuf,recvBuf.length);
+		//DatagramPacket recvPacket = new DatagramPacket(recvBuf,recvBuf.length);
 		//DatagramPacket sendPacket = null;
 		
 		while(true) 
 		{
 			try{
-				
+				DatagramPacket recvPacket = new DatagramPacket(recvBuf,recvBuf.length);
 				//用以接收请求
+				DatagramPacket testpacket = new DatagramPacket(buf, buf.length,InetAddress.getByName(host),InteractorThread.REPLY_LOCATION_PORT);
+				reply_loc_socket.send(testpacket);
 				query_loc_socket.receive(recvPacket);
+				
+				System.out.println(recvPacket.getPort());
+				
+				
 				
 				System.out.println(recvPacket.toString());
 				
@@ -120,28 +128,85 @@ public class InteractorThread implements Runnable {
 				//debug
 				String msg = new String(Double.toString(latitude));
 				msg += "	" + Double.toString(longitude);
-				//Log.i("经纬度", msg);
+				Log.i("经纬度", msg);
+				
+				//如果是节点的位置请求，直接返回
+				//如果是关于邻居的位置请求，则获取邻居位置并计算距离，判断是否在通信范围内
+				byte[] srcip = new byte[5];
+				byte[] neigh_lat = new byte[5];
+				byte[] neigh_lng = new byte[5];
+				byte[] dis = new byte[5];
+				for (int k = 0; k < 4; k++) {
+					srcip[k] = recvBuf[k];
+					neigh_lat[k] = recvBuf[k + 4];
+					neigh_lng[k] = recvBuf[k + 8];
+					dis[k] = recvBuf[k+12];
+				}
+				
+				int neigh_lat_int = ByteHelper.byte_array_to_int(neigh_lat);
+				int neigh_lng_int = ByteHelper.byte_array_to_int(neigh_lng);
+				if( (neigh_lat_int == 0) && (neigh_lng_int==0) )//节点位置请求
+				{
+					System.out.println("LOCAL LOCATION QUERY");
+					//要不要给dis置0
+				}
+				else
+				{
+					double neigh_lat_double = neigh_lat_int * 1.0 / Math.pow(10, accuracy);
+					double neigh_lng_double = neigh_lng_int * 1.0 / Math.pow(10, accuracy);
+					
+					double distance = Distance.getDistance(latitude, longitude, neigh_lat_double, neigh_lng_double);
+					
+					/*不好，还是得让aodv自己处理
+					if(!Distance.canConnected(distance))//直接丢弃吧
+					{
+						i_dst=0;
+						dstip=ByteHelper.int_to_byte_array(i_dst);
+					}
+					*/
+					
+					
+					if(Distance.canConnected(distance))//距离为m，转为int型，再转byte存入dis
+					{
+						dis = ByteHelper.int_to_byte_array((int)distance);
+						System.out.println(dis);
+						System.out.println(ByteHelper.byte_array_to_int(dis));
+					}
+					else//debug
+					{
+						System.out.println("Cannot communicate with that one!");
+					}
+					
+					
+				}
 				
 				//将经纬度转换成int类型便于在上下层交换,纬度为y，经度为x
 				int x = (int)(longitude * Math.pow(10, accuracy));
 				int y = (int)(latitude * Math.pow(10, accuracy));
 				//debug
 				msg = Integer.toString(x);
-				msg = "		" + Integer.toString(y);
+				msg += "		" + Integer.toString(y);
 				//Log.i("int经纬度", msg);
 				
 				//将int型的数据转换成byte型数组
 				byte[] xb = ByteHelper.int_to_byte_array(x);
 				byte[] yb = ByteHelper.int_to_byte_array(y);
+				//将接收到的数据复制到待发送数据区buf
+				System.arraycopy(recvBuf, 0, buf, 0, 256);
 				for(int i = 0; i < 4; i++){
-					buf[i] = xb[i];
-					buf[i+4] = yb[i];
+					buf[i+4] = yb[i];//纬度
+					buf[i+8] = xb[i];//经度
+					buf[i+12] = dis[i];//距离
+					
 				}
 				//debug
-				//Log.i("Byte经纬度", buf.toString());
+				Log.i("recvBuf",recvBuf.toString());
+				Log.i("buf",buf.toString());
+				//debug
+				Log.i("Byte经纬度", buf.toString());
 				
-				DatagramPacket packet = new DatagramPacket(buf, buf.length,
-						InetAddress.getByName(host),InteractorThread.REPLY_LOCATION_PORT);
+				DatagramPacket packet = new DatagramPacket(buf, buf.length,InetAddress.getByName(host),InteractorThread.REPLY_LOCATION_PORT);
+				//DatagramPacket packet = new DatagramPacket(buf, buf.length,InetAddress.getByName(host),recvPacket.getPort());
 				reply_loc_socket.send(packet);
 				
 				/*

@@ -2,7 +2,7 @@ package stepposition;
 
 import java.io.IOException;
 
-import com.realsimulation.ConfigLocation.ConfigLocation;
+import com.realsimulator.ConfigLocation.ConfigLocation;
 import com.realsimulator.Main.InteractorThread;
 
 import android.content.Context;

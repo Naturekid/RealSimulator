@@ -3,9 +3,8 @@ package com.realsimulator.Main;
 import stepposition.FullLocation;
 import stepposition.GpsPosition;
 
-import com.realsimulation.ConfigLocation.ConfigLocation;
+import com.realsimulator.ConfigLocation.ConfigLocation;
 import com.realsimulator.Util.ParseConfigFile;
-import com.realsimulator.Util.testGetLocation;
  
 import android.location.Location;
 import android.os.Bundle;
@@ -17,13 +16,13 @@ import android.util.Log;
 import android.view.Menu;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.RadioGroup.OnCheckedChangeListener;
 import android.widget.TextView;
 
 public class MainActivity extends Activity {
 	
 	private RadioGroup groupMode;
     private RadioButton radioGPS , radioConfig;
+    private NodeInfo node;
     
   //本进程Contex
 	Context thisContext = this;
@@ -37,8 +36,8 @@ public class MainActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 	
-		NodeInfo node = NodeInfo.getInstance();
-		node.setMode(NodeInfo.GPS_Mode);
+		node = NodeInfo.getInstance();
+		//node.setMode(NodeInfo.GPS_Mode);
 		
 		Handler gpsHandler=new Handler(thisContext.getMainLooper())
 		{
@@ -52,6 +51,7 @@ public class MainActivity extends Activity {
 			     //进行GPS的首次定位
 				
 				FullLocation flocation=gpsposition.getLocation();
+				
 				if(flocation!=null)
 				{
 					Location location=flocation.getLocation();
@@ -71,9 +71,34 @@ public class MainActivity extends Activity {
 		
 		
 		//默认启动GPS
-		gpsposition=new GpsPosition(thisContext, gpsHandler);//普通方式
-//		gpsposition=new GpsPosition(this, handler,0,0);//有默认初始值的方式
+//		gpsposition=new GpsPosition(thisContext, gpsHandler);//普通方式
+		gpsposition=new GpsPosition(thisContext, gpsHandler,node.defualtLongitude,node.defualtLatitude);//有默认初始值的方式
 		gpsposition.start();
+		
+		if(node.Mode==NodeInfo.GPS_Mode)//已启动
+		{
+			System.out.println("GPS MODE");
+		}
+		else if(node.Mode==NodeInfo.Config_Mode)
+		{
+			//确定首个配置位置
+			TextView tv = (TextView)findViewById(R.id.testText);
+			ConfigLocation configLoc = ConfigLocation.getInstance();
+			ParseConfigFile pcf = configLoc.getFirstLocation();
+			
+			String test = new String();
+			test ="首次定位  Mode:Config  NodeNo:" + node.nodeNo + "  纬度，经度 ：" 
+					+ Double.toString(pcf.latitude) + Double.toString(pcf.longitude);
+			tv.setText(test);
+		}
+		else
+		{
+			try {
+		        throw new Exception();
+	        } catch (Exception e) {  
+		        Log.e("Mode Error", "Exception: 错误的启动模式", e); 
+		    } 
+		}
 		
 		//启动监听位置请求的线程
         InteractorThread queryListener = InteractorThread.getInstace();
@@ -128,6 +153,9 @@ public class MainActivity extends Activity {
         groupMode = (RadioGroup)this.findViewById(R.id.location_mode);
         radioGPS = (RadioButton)findViewById(R.id.mode_GPS);
         radioConfig = (RadioButton)findViewById(R.id.mode_Config);
+        if(node.Mode==NodeInfo.Config_Mode)
+        	radioConfig.setChecked(true);
+        else radioGPS.setChecked(true);
         //声明监听器
         groupMode.setOnCheckedChangeListener(modeChangeListener);
             

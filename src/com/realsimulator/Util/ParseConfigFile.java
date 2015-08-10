@@ -58,6 +58,21 @@ public class ParseConfigFile {
 			String[] strArray = line.split(" ");
 			if(strArray.length == 6)//config中的每一个行可被分割为六个元素，否则出错
 			{
+				this.nodeNo = Integer.parseInt(strArray[0], 10);
+				double dTime = Double.parseDouble(strArray[1]);
+				this.gotTime = (long)dTime*1000;
+				//this.gotTime = Long.parseLong(strArray[0], 10);
+				this.latitude = Double.parseDouble(strArray[2]);
+				this.longitude = Double.parseDouble(strArray[3]);
+				if(strArray[4].equals("nan"))//表示无速度 
+					this.speed = 0;
+				else
+					this.speed = Double.parseDouble(strArray[4]);
+				if(strArray[5].equals("nan"))//表示无速度 
+					this.angle = 0;
+				else
+					this.angle = Double.parseDouble(strArray[5]);
+				/*
 				//配置文件中的第一个元素为double型，转成Long型
 				double dTime = Double.parseDouble(strArray[0]);
 				this.gotTime = (long)dTime*1000;
@@ -73,6 +88,7 @@ public class ParseConfigFile {
 				else
 					this.angle = Double.parseDouble(strArray[4]);
 				this.nodeNo = Integer.parseInt(strArray[5], 10);
+				*/
 			}
 			else
 			{

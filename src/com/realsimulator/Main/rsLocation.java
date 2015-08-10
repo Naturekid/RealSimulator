@@ -4,7 +4,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 
-import com.realsimulation.ConfigLocation.ConfigLocation;
+import com.realsimulator.ConfigLocation.ConfigLocation;
 import com.realsimulator.Util.ParseConfigFile;
 import stepposition.FullLocation;
 import stepposition.GpsPosition;

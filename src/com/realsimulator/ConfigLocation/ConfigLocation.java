@@ -1,10 +1,9 @@
-package com.realsimulation.ConfigLocation;
+package com.realsimulator.ConfigLocation;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 
-import android.location.Location;
 import android.util.Log;
 
 import com.realsimulator.Main.NodeInfo;
@@ -19,7 +18,7 @@ import com.realsimulator.Util.ParseConfigFile;
 public class ConfigLocation {
 	
 	//private String configPath = new String("/sdcard/RealSimulation/track.txt");
-	private String configPath = new String("/sdcard/RealSimulation/track.txt");
+	private String configPath = new String("/sdcard/RealSimulator/track.txt");
 	public ParseConfigFile lastLoc = null;
 	public ParseConfigFile curLoc = null;
 	public boolean eof = false;

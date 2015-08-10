@@ -18,8 +18,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/mode_GPS"
-            android:text="@string/modeGPS"
-            android:checked="true">
+            android:text="@string/modeGPS" >
             </RadioButton>
 		<RadioButton
 		    android:layout_width="wrap_content"
