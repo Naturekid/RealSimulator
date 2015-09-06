@@ -72,8 +72,8 @@ public class MainActivity extends Activity {
 		
 		//默认启动GPS
 //		gpsposition=new GpsPosition(thisContext, gpsHandler);//普通方式
-		gpsposition=new GpsPosition(thisContext, gpsHandler,node.defualtLongitude,node.defualtLatitude);//有默认初始值的方式
-		gpsposition.start();
+//		gpsposition=new GpsPosition(thisContext, gpsHandler,node.defualtLongitude,node.defualtLatitude);//有默认初始值的方式
+//		gpsposition.start();
 		
 		if(node.Mode==NodeInfo.GPS_Mode)//已启动
 		{

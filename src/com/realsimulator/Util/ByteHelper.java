@@ -45,4 +45,14 @@ public class ByteHelper {
 
 		);
 	}
+	
+	public static final boolean endian_test()
+	{
+		int x = 1;
+		char p = (char)x;
+		if(p == 1)
+			return false;//little endian
+		else
+			return true;//big endian
+	}
 }

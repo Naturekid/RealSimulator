@@ -102,20 +102,16 @@ public class InteractorThread implements Runnable {
 		while(true) 
 		{
 			try{
+
 				DatagramPacket recvPacket = new DatagramPacket(recvBuf,recvBuf.length);
 				//用以接收请求
-				DatagramPacket testpacket = new DatagramPacket(buf, buf.length,InetAddress.getByName(host),InteractorThread.REPLY_LOCATION_PORT);
-				reply_loc_socket.send(testpacket);
+				//DatagramPacket testpacket = new DatagramPacket(buf, buf.length,InetAddress.getByName(host),InteractorThread.REPLY_LOCATION_PORT);
+				//reply_loc_socket.send(testpacket);
+				
 				query_loc_socket.receive(recvPacket);
+		
+				//String recv_str = new String(recvBuf.toString());
 				
-				System.out.println(recvPacket.getPort());
-				
-				
-				
-				System.out.println(recvPacket.toString());
-				
-				//测试。定时处理请求
-				//thread.sleep(2000);
 				
 				//long curTime = System.currentTimeMillis();//获得接到位置请求时的系统时间
 				
@@ -136,12 +132,29 @@ public class InteractorThread implements Runnable {
 				byte[] neigh_lat = new byte[5];
 				byte[] neigh_lng = new byte[5];
 				byte[] dis = new byte[5];
-				for (int k = 0; k < 4; k++) {
-					srcip[k] = recvBuf[k];
-					neigh_lat[k] = recvBuf[k + 4];
-					neigh_lng[k] = recvBuf[k + 8];
-					dis[k] = recvBuf[k+12];
+	
+				if(ByteHelper.endian_test())//big endian
+				{
+					for (int k = 0; k < 4; k++) {
+						srcip[k] = recvBuf[k];
+						
+						neigh_lat[k] = recvBuf[k + 4];
+						neigh_lng[k] = recvBuf[k + 8];
+						dis[k] = recvBuf[k +12];
+					}
 				}
+				else {
+					
+					for (int k = 0; k < 4; k++) {
+						srcip[k] = recvBuf[k];
+					
+						neigh_lat[3-k] = recvBuf[k + 4];
+						neigh_lng[3-k] = recvBuf[k + 8];
+						dis[3-k] = recvBuf[k +12];
+					}
+				}
+				
+
 				
 				int neigh_lat_int = ByteHelper.byte_array_to_int(neigh_lat);
 				int neigh_lng_int = ByteHelper.byte_array_to_int(neigh_lng);
@@ -156,7 +169,7 @@ public class InteractorThread implements Runnable {
 					double neigh_lng_double = neigh_lng_int * 1.0 / Math.pow(10, accuracy);
 					
 					double distance = Distance.getDistance(latitude, longitude, neigh_lat_double, neigh_lng_double);
-					
+					dis = ByteHelper.int_to_byte_array((int)distance);
 					/*不好，还是得让aodv自己处理
 					if(!Distance.canConnected(distance))//直接丢弃吧
 					{
@@ -168,7 +181,7 @@ public class InteractorThread implements Runnable {
 					
 					if(Distance.canConnected(distance))//距离为m，转为int型，再转byte存入dis
 					{
-						dis = ByteHelper.int_to_byte_array((int)distance);
+						
 						System.out.println(dis);
 						System.out.println(ByteHelper.byte_array_to_int(dis));
 					}
@@ -192,12 +205,24 @@ public class InteractorThread implements Runnable {
 				byte[] xb = ByteHelper.int_to_byte_array(x);
 				byte[] yb = ByteHelper.int_to_byte_array(y);
 				//将接收到的数据复制到待发送数据区buf
-				System.arraycopy(recvBuf, 0, buf, 0, 256);
-				for(int i = 0; i < 4; i++){
-					buf[i+4] = yb[i];//纬度
-					buf[i+8] = xb[i];//经度
-					buf[i+12] = dis[i];//距离
+				System.arraycopy(recvBuf, 0, buf, 0, recvPacket.getLength());
+				if(ByteHelper.endian_test())
+				{
+					for(int i = 0; i < 4; i++){
+						buf[i+4] = yb[i];//纬度
+						buf[i+8] = xb[i];//经度
+						buf[i+12] = dis[i];//距离
 					
+					}
+				}
+				else
+				{
+					for(int i = 0; i < 4; i++){
+						buf[i+4] = yb[3-i];//纬度
+						buf[i+8] = xb[3-i];//经度
+						buf[i+12] = dis[3-i];//距离
+					
+					}
 				}
 				//debug
 				Log.i("recvBuf",recvBuf.toString());
@@ -207,6 +232,9 @@ public class InteractorThread implements Runnable {
 				
 				DatagramPacket packet = new DatagramPacket(buf, buf.length,InetAddress.getByName(host),InteractorThread.REPLY_LOCATION_PORT);
 				//DatagramPacket packet = new DatagramPacket(buf, buf.length,InetAddress.getByName(host),recvPacket.getPort());
+				
+				String send_str = new String(buf.toString());
+				
 				reply_loc_socket.send(packet);
 				
 				/*

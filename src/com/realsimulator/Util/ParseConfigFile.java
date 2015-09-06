@@ -59,9 +59,10 @@ public class ParseConfigFile {
 			if(strArray.length == 6)//config中的每一个行可被分割为六个元素，否则出错
 			{
 				this.nodeNo = Integer.parseInt(strArray[0], 10);
-				double dTime = Double.parseDouble(strArray[1]);
-				this.gotTime = (long)dTime*1000;
-				//this.gotTime = Long.parseLong(strArray[0], 10);
+				//double dTime = Double.parseDouble(strArray[1]);
+				//this.gotTime = (long)dTime*1000;
+				
+				this.gotTime = Long.parseLong(strArray[0], 10);
 				this.latitude = Double.parseDouble(strArray[2]);
 				this.longitude = Double.parseDouble(strArray[3]);
 				if(strArray[4].equals("nan"))//表示无速度 
