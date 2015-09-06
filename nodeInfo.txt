@@ -1,7 +1,0 @@
-nodeNo:22
-com_Dis:1000
-Mode:Config_Mode
-defualtLatitude:39.0
-defualtLongitude:120.0
-startTime:1432604189
-endTime:1433604189
