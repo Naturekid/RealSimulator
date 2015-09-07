@@ -3,20 +3,25 @@ package com.realsimulator.Main;
 import stepposition.FullLocation;
 import stepposition.GpsPosition;
 
-import com.realsimulator.ConfigLocation.ConfigLocation;
-import com.realsimulator.Util.ParseConfigFile;
- 
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.app.Activity;
-import android.content.Context;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.Menu;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+
+import com.realsimulator.ConfigLocation.ConfigLocation;
+import com.realsimulator.Util.ParseConfigFile;
 
 public class MainActivity extends Activity {
 	
@@ -36,6 +41,52 @@ public class MainActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 	
+		//检测GPS是否打开，添加跳转到打开GPS设置的判断
+		LocationManager locationManager = (LocationManager)getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
+		if(locationManager==null)
+		{
+			System.out.println("locationManager is null");
+			Log.e("com.realsimulator.Main","获取到的LocationManager为空");
+		}
+		else
+		{
+			try
+			{
+				boolean re=locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+				
+				if(!re)
+				{
+					AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+		            dialog.setMessage("请打开GPS");
+		            dialog.setPositiveButton("确定",
+		                    new android.content.DialogInterface.OnClickListener() {
+		 
+		                        @Override
+		                        public void onClick(DialogInterface arg0, int arg1) {
+		 
+		                            // 转到手机设置界面，用户设置GPS
+		                            Intent intent = new Intent(
+		                                    Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+		                            startActivityForResult(intent, 0); // 设置完成后返回到原来的界面
+		 
+		                        }
+		                    });
+		            dialog.setNeutralButton("取消", new android.content.DialogInterface.OnClickListener() {
+		                 
+		                @Override
+		                public void onClick(DialogInterface arg0, int arg1) {
+		                    arg0.dismiss();
+		                }
+		            } );
+		            dialog.show();
+				}
+			}
+			catch (Exception e) {
+				// TODO: handle exception
+				e.printStackTrace();
+			}
+		}
+		
 		node = NodeInfo.getInstance();
 		//node.setMode(NodeInfo.GPS_Mode);
 		
@@ -72,6 +123,7 @@ public class MainActivity extends Activity {
 		
 		//默认启动GPS
 //		gpsposition=new GpsPosition(thisContext, gpsHandler);//普通方式
+
 //		gpsposition=new GpsPosition(thisContext, gpsHandler,node.defualtLongitude,node.defualtLatitude);//有默认初始值的方式
 //		gpsposition.start();
 		
