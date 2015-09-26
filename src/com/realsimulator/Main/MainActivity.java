@@ -42,7 +42,7 @@ public class MainActivity extends Activity {
 		setContentView(R.layout.activity_main);
 	
 		//检测GPS是否打开，添加跳转到打开GPS设置的判断
-		LocationManager locationManager = (LocationManager)getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
+/*		LocationManager locationManager = (LocationManager)getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
 		if(locationManager==null)
 		{
 			System.out.println("locationManager is null");
@@ -86,7 +86,7 @@ public class MainActivity extends Activity {
 				e.printStackTrace();
 			}
 		}
-		
+		*/
 		node = NodeInfo.getInstance();
 		//node.setMode(NodeInfo.GPS_Mode);
 		

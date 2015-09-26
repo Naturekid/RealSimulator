@@ -140,7 +140,7 @@ public class ConfigLocation {
 		
 		///*特殊处理配置时间
 		queryTime = queryTime - this.sub;
-		System.out.println("getConfigLocation CL" +Long.toString(queryTime));
+		System.out.println("getConfigLocation CL " +Long.toString(queryTime));
 		//*/
 		if(this.eof)//文件已到文件末
 		{
@@ -162,15 +162,18 @@ public class ConfigLocation {
 		if(queryTime < curLoc.gotTime)//节点未运动到上次所读取到的时间点，匀速计算位置
 		{
 			curPcf = calLocation(queryTime);
+			System.out.print("queryTime < curLoc.gotTime");
 		}
 		else if(queryTime == curLoc.gotTime)//节点恰好运动到上次所读位置
 		{
 			curPcf.copy(curLoc);
+			System.out.print("queryTime == curLoc.gotTime");
 		}
 		else//节点已过上次所读位置，继续读取文件以获得新位置
 		{
 			//curLine = buf.readLine();
 			lastLoc.copy(curLoc);	
+			System.out.print("queryTime > curLoc.gotTime");
 			//按行读取文件内容
 			try { 
 				

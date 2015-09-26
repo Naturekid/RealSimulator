@@ -225,10 +225,8 @@ public class InteractorThread implements Runnable {
 					}
 				}
 				//debug
-				Log.i("recvBuf",recvBuf.toString());
-				Log.i("buf",buf.toString());
-				//debug
-				Log.i("Byte经纬度", buf.toString());
+//				Log.i("recvBuf",recvBuf.toString());
+//				Log.i("buf",buf.toString());
 				
 				DatagramPacket packet = new DatagramPacket(buf, buf.length,InetAddress.getByName(host),InteractorThread.REPLY_LOCATION_PORT);
 				//DatagramPacket packet = new DatagramPacket(buf, buf.length,InetAddress.getByName(host),recvPacket.getPort());

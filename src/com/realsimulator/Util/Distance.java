@@ -39,10 +39,13 @@ public class Distance {
 	public static boolean canConnected(double distance)
 	{
 		NodeInfo node = NodeInfo.getInstance();
+		/*
 		double random_dis = Math.random() * node.com_Dis/2.5 - node.com_Dis/5;//暂定波动范围为通信范围的1/5，正负
 		//做实验的时候可以不要随机数，否则难控制
 		
 		if( (distance + random_dis) < node.com_Dis)
+		*/
+		if(distance < node.com_Dis)
 			return true;
 		return false;
 	}
