@@ -24,10 +24,15 @@ public class Distance {
 		double b = rad(longitude1) - rad(longitude2);
 		double s = 2 * Math.asin(Math.sqrt(Math.pow(Math.sin(a / 2), 2) 
 					+ Math.cos(Lat1) * Math.cos(Lat2) * Math.pow(Math.sin(b / 2), 2)));
+		
+		System.out.println("test-Distance: Lat1:"+Lat1+",Lat2:"+Lat2+",a="+a+",b="+b+",s="+s);
+		
 		s = s * EARTH_RADIUS;
 		s = Math.round(s * 10000) / 10000;
 		//单位为米，不需要再进行进行处理
-		System.out.println(s);
+		System.out.println("test-Distance: 本节点经纬度：("+latitude1+","+longitude1+") , 邻居的经纬度：("+latitude2+","+longitude2+")");
+		System.out.println("test-Distance: distance："+s);
+//		System.out.println(s);
 		return s;
 	}
 	

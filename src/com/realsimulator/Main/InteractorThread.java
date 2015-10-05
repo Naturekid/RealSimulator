@@ -181,8 +181,8 @@ public class InteractorThread implements Runnable {
 					
 					if(Distance.canConnected(distance))//距离为m，转为int型，再转byte存入dis
 					{
-						
-						System.out.println(dis);
+						/*System.out.println("本节点经纬度：("+latitude+","+longitude+") , 邻居的经纬度：("+neigh_lat_double+","+neigh_lng_double+")");
+						System.out.println("distance："+distance);*/
 						System.out.println(ByteHelper.byte_array_to_int(dis));
 					}
 					else//debug

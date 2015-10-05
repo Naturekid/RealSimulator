@@ -63,8 +63,9 @@ public class ParseConfigFile {
 				//this.gotTime = (long)dTime*1000;
 				
 				this.gotTime = Long.parseLong(strArray[1], 10);
-				this.latitude = Double.parseDouble(strArray[2]);
-				this.longitude = Double.parseDouble(strArray[3]);
+				//根据轨迹文件中，第二列是经度，第三列是维度
+				this.latitude = Double.parseDouble(strArray[3]);
+				this.longitude = Double.parseDouble(strArray[2]);
 				if(strArray[4].equals("nan"))//表示无速度 
 					this.speed = 0;
 				else
