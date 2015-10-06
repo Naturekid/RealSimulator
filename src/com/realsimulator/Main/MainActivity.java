@@ -34,13 +34,17 @@ public class MainActivity extends Activity {
 	
 	GpsPosition gpsposition=null;
     
-
+	//表示主activity是否还活着
+	public static boolean alive=false;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 	
+		System.out.println("testSimulator: onCreate");
+		alive=true;
+		
 		//检测GPS是否打开，添加跳转到打开GPS设置的判断
 /*		LocationManager locationManager = (LocationManager)getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
 		if(locationManager==null)
@@ -196,6 +200,7 @@ public class MainActivity extends Activity {
 	}
 
 	
+	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
@@ -220,7 +225,8 @@ public class MainActivity extends Activity {
 		
 		//关闭文件或者gps定位
 		//gpsposition.close();
-		
+		alive=false;
+		System.out.println("testSimulator: MainAcitivity onDestroy");
 		super.onDestroy();
 	}
 	
@@ -370,4 +376,5 @@ public class MainActivity extends Activity {
 	*/
 	
 
+	
 }

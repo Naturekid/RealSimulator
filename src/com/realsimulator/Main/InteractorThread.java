@@ -101,6 +101,14 @@ public class InteractorThread implements Runnable {
 		
 		while(true) 
 		{
+			if(!MainActivity.alive){
+				System.out.println("testSimulator: 退出返回distance线程，MainActivity.alive:"+MainActivity.alive);
+				break;
+			}
+			else{
+				System.out.println("testSimulator: MainActivity.alive:"+MainActivity.alive);
+			}
+			
 			try{
 
 				DatagramPacket recvPacket = new DatagramPacket(recvBuf,recvBuf.length);
@@ -258,6 +266,10 @@ public class InteractorThread implements Runnable {
 			
 		}
 		
+		//关闭链接
+		query_loc_socket.close();
+		reply_loc_socket.close();
+		System.out.println("testSimulator: close the socket");
 	}
 	
 	

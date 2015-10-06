@@ -6,6 +6,7 @@ import java.io.IOException;
 
 import android.util.Log;
 
+import com.realsimulator.Main.MainActivity;
 import com.realsimulator.Main.NodeInfo;
 import com.realsimulator.Util.ParseConfigFile;
 
@@ -137,6 +138,8 @@ public class ConfigLocation {
 	{
 		//请求时间
 		long queryTime = System.currentTimeMillis();
+		
+		System.out.println("testSimulator: System.currentTimeMillis():"+queryTime);
 		
 		///*特殊处理配置时间
 		queryTime = queryTime - this.sub;
