@@ -5,13 +5,16 @@ import stepposition.GpsPosition;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.Message;
 import android.provider.Settings;
 import android.util.Log;
@@ -34,8 +37,22 @@ public class MainActivity extends Activity {
 	
 	GpsPosition gpsposition=null;
     
-	//表示主activity是否还活着
-	public static boolean alive=false;
+	//表示是否要退出计算距离的线程
+//	public static boolean stopThread=false;
+	ServiceConnection conn=new ServiceConnection() {
+		
+		@Override
+		public void onServiceDisconnected(ComponentName name) {
+			// TODO Auto-generated method stub
+			System.out.println("testSimulator: disconnect the distance compute Service");
+		}
+		
+		@Override
+		public void onServiceConnected(ComponentName name, IBinder service) {
+			// TODO Auto-generated method stub
+			System.out.println("testSimulator: connect the distance compute Service");
+		}
+	};
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +60,6 @@ public class MainActivity extends Activity {
 		setContentView(R.layout.activity_main);
 	
 		System.out.println("testSimulator: onCreate");
-		alive=true;
 		
 		//检测GPS是否打开，添加跳转到打开GPS设置的判断
 /*		LocationManager locationManager = (LocationManager)getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
@@ -156,9 +172,12 @@ public class MainActivity extends Activity {
 		    } 
 		}
 		
-		//启动监听位置请求的线程
+		//启动监听位置请求的线程()
         InteractorThread queryListener = InteractorThread.getInstace();
         queryListener.init();
+        /*Intent intent=new Intent(MainActivity.this, DistanceService.class);
+        boolean b=this.getApplicationContext().bindService(intent, conn, Context.BIND_AUTO_CREATE);
+        System.out.println("testSimulator: MainActivity bindService:"+b);*/
 		
         //用不了。不能使用同一接口
 		//启动测试定期请求的测试线程
@@ -220,13 +239,21 @@ public class MainActivity extends Activity {
 	}
 	
 	@Override
+	protected void onStop() {
+//		InteractorThread.getInstace().close();
+		System.out.println("testSimulator: MainAcitivity onStop");
+		super.onStop();
+	}
+	
+	@Override
 	protected void onDestroy() {
 		// TODO Auto-generated method stub
 		
 		//关闭文件或者gps定位
 		//gpsposition.close();
-		alive=false;
+		InteractorThread.getInstace().close();
 		System.out.println("testSimulator: MainAcitivity onDestroy");
+		unbindService(conn);
 		super.onDestroy();
 	}
 	

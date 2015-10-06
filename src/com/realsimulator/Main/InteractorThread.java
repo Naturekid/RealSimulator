@@ -1,19 +1,19 @@
 package com.realsimulator.Main;
 
-import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
-import java.net.UnknownHostException;
-import java.util.Iterator;
-import java.util.ListIterator;
-import java.util.concurrent.PriorityBlockingQueue;
 
+import android.app.Service;
+import android.content.Intent;
 import android.location.Location;
+import android.os.Binder;
+import android.os.IBinder;
 import android.util.Log;
 
-import com.realsimulator.Util.*;
+import com.realsimulator.Util.ByteHelper;
+import com.realsimulator.Util.Distance;
 
 /**
  * @author Cai
@@ -41,10 +41,18 @@ public class InteractorThread implements Runnable {
 	
 	private static final String TAG = "InteractorThread";
 	
+	//用来关闭线程
+	boolean stopThread=false;
+	MyBinder mybinder=new MyBinder();
+	
 	public void init() {
 		start();
 	}
 	
+	//关闭本线程
+	public void close(){
+		stopThread=true;
+	}
 	
 	/**
 	 * private构造函数
@@ -101,13 +109,14 @@ public class InteractorThread implements Runnable {
 		
 		while(true) 
 		{
-			if(!MainActivity.alive){
-				System.out.println("testSimulator: 退出返回distance线程，MainActivity.alive:"+MainActivity.alive);
+			if(stopThread){
+				System.out.println("testSimulator: 关闭响应请求距离计算的线程");
 				break;
 			}
 			else{
-				System.out.println("testSimulator: MainActivity.alive:"+MainActivity.alive);
+				System.out.println("testSimulator: 响应请求距离计算线程运行");
 			}
+				
 			
 			try{
 
@@ -271,8 +280,45 @@ public class InteractorThread implements Runnable {
 		reply_loc_socket.close();
 		System.out.println("testSimulator: close the socket");
 	}
+/*
+	@Override
+	public void onCreate() {
+		// TODO Auto-generated method stub
+		System.out.println("testSimulator: Service onCreate");
+		super.onCreate();
+	}
+
+	@Override
+	public IBinder onBind(Intent intent) {
+		// TODO Auto-generated method stub
+		init();
+		System.out.println("testSimulator: Service onBind");
+//		return null;
+		return mybinder;
+	}
 	
+	@Override
+	public boolean onUnbind(Intent intent) {
+		// TODO Auto-generated method stub
+		System.out.println("testSimulator: Service onUnBind");
+		stopThread=true;
+		return super.onUnbind(intent);
+	}
 	
+	@Override
+	public void onDestroy() {
+		// TODO Auto-generated method stub
+		System.out.println("testSimulator: Service onDestroy");
+		stopThread=true;
+		super.onDestroy();
+	}*/
+	
+	public class MyBinder extends Binder{
+        
+        public InteractorThread getService(){
+            return InteractorThread.this;
+        }
+    }
 }
 
 
