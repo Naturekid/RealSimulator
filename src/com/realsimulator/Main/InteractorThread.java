@@ -22,6 +22,8 @@ import com.realsimulator.Util.Distance;
  * 经纬度的表示为xxx.xxxxxx，精确到小数点后6位
  * 表示
  * 在 启动
+ * 
+ * 接受到的请求：第一个字节：经度，第二个字节：维度
  */
 
 
