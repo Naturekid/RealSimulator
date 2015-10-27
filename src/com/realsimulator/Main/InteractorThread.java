@@ -39,7 +39,7 @@ public class InteractorThread implements Runnable {
 	private Thread thread;
 	private static InteractorThread instance = null;
 	private DatagramSocket query_loc_socket = null;
-	private DatagramSocket reply_loc_socket = null;
+//	private DatagramSocket reply_loc_socket = null;
 	
 	private static final String TAG = "InteractorThread";
 	
@@ -62,7 +62,7 @@ public class InteractorThread implements Runnable {
 	private InteractorThread() {
 		try {
 			query_loc_socket = new DatagramSocket(InteractorThread.QUERY_LOCATION_PORT);
-			reply_loc_socket = new DatagramSocket(InteractorThread.REPLY_LOCATION_PORT);
+//			reply_loc_socket = new DatagramSocket(InteractorThread.REPLY_LOCATION_PORT);
 			
 		} catch (SocketException e) {
 			e.printStackTrace();
@@ -248,28 +248,13 @@ public class InteractorThread implements Runnable {
 //				Log.i("buf",buf.toString());
 				
 				DatagramPacket packet = new DatagramPacket(buf, buf.length,InetAddress.getByName(host),InteractorThread.REPLY_LOCATION_PORT);
-				//DatagramPacket packet = new DatagramPacket(buf, buf.length,InetAddress.getByName(host),recvPacket.getPort());
+				DatagramPacket packet_dtn = new DatagramPacket(buf, buf.length,InetAddress.getByName(host),recvPacket.getPort());
 				
 				String send_str = new String(buf.toString());
 				
-				reply_loc_socket.send(packet);
-				
-				/*
-				double longitude = Location.getInstance().getLongitude();
-				double latitude  = Location.getInstance().getLatitude();
-				int x = (int)(longitude * Math.pow(10, accuracy));
-				int y = (int)(latitude * Math.pow(10, accuracy));
-				String host = "127.0.0.1";
-				byte[] xb = ByteHelper.int_to_byte_array(x);
-				byte[] yb = ByteHelper.int_to_byte_array(y);
-				for(int i = 0; i < 4; i++){
-					buf[i+8] = xb[i];
-					buf[i+12] = yb[i];
-				}
-				DatagramPacket packet = new DatagramPacket(buf, buf.length,
-						InetAddress.getByName(host),Netw_layerInteractor.AODV_LOCATION_PORT);
-				sock_loc_reply.send(packet);
-				*/
+//				reply_loc_socket.send(packet);
+				query_loc_socket.send(packet);
+				query_loc_socket.send(packet_dtn);
 			}
 			catch(Exception e){
 				e.printStackTrace();
@@ -279,7 +264,7 @@ public class InteractorThread implements Runnable {
 		
 		//关闭链接
 		query_loc_socket.close();
-		reply_loc_socket.close();
+//		reply_loc_socket.close();
 		System.out.println("testSimulator: close the socket");
 	}
 /*
